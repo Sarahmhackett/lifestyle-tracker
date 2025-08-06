@@ -1,15 +1,10 @@
-import Image from "next/image";
 import styles from "./page.module.css";
+import ValidateUserForm from "./components/ValidateUserForm";
 
 export default function Home() {
   return (
     <div className={styles.page}>
-      <main className={styles.main}>
-       
-          <h2>
-            Main page.
-          </h2>
-      </main>
+      <ValidateUserForm />
     </div>
   );
 }

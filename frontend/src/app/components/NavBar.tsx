@@ -1,0 +1,15 @@
+import Image from "next/image";
+import styles from "./navbar.module.css";
+
+const NavBar = () => { 
+    return (
+        <nav className={styles.navigationBar}>
+          <div className={styles.imageWrapper}>
+            <Image src="/nhs-logo.png" alt="" fill className={styles.image} />
+          </div>
+        </nav>
+    )
+}
+
+export default NavBar;
+
