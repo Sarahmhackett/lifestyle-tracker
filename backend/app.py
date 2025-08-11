@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 
 from dotenv import load_dotenv
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, session
 from flask_cors import CORS
 import requests
 
@@ -10,10 +10,11 @@ from utils.age import calculate_age
 from constants import *
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True)
 
 load_dotenv()
 API_KEY = os.getenv("API_KEY")
+app.secret_key = os.getenv("FLASK_SECRET_KEY")
 
 def get_patient_from_api(nhs_number):
     url = f"https://al-tech-test-apim.azure-api.net/tech-test/t2/patients/{nhs_number}"
@@ -67,7 +68,16 @@ def validate_patient():
     if age < 16:
         return jsonify({"error": ERROR_UNDERAGE}), 400
 
+    session["nhs_number"] = nhs_number
+
     return jsonify(patient)
+
+@app.route("/session-info", methods=["GET"])
+def session_info():
+    nhs_number = session.get("nhs_number")
+    if not nhs_number:
+        return jsonify({"error": "No NHS number in session"}), 404
+    return jsonify({"nhsNumber": nhs_number})
 
 if __name__ == "__main__":
     app.run(debug=True)

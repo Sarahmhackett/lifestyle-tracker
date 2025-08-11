@@ -1,10 +1,12 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { validatePatient } from "../utils/validatePatientAPI";
 import styles from "./validateuserform.module.css";
-import router from "next/router";
 
 const ValidateUserForm = () => {
+
+    const router = useRouter();
 
     const [nhsNumber, setNhsNumber] = useState<number | null>(null);
     const [surname, setSurname] = useState<string>("");
@@ -27,36 +29,14 @@ const ValidateUserForm = () => {
             return;
         }
 
-        // const [year, month, day] = dateOfBirth.split("-");
-        // const formattedDateOfBirth = `${day}-${month}-${year}`;
-
-        // console.log("data from form: ", nhsNumber, surname, formattedDateOfBirth);
-
-        // setNhsNumber(null);
-        // setSurname("");
-        // setDateOfBirth(null);
-
         try {
-            const response = await fetch("http://localhost:5000/validation", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ nhsNumber, surname, dateOfBirth }),
-            });
-        
-            if (!response.ok) {
-              const errorData = await response.json();
-              alert(errorData.error || "Validation failed");
-              return;
-            }
-        
-            const patientData = await response.json();
+            const patientData = await validatePatient({ nhsNumber, surname, dateOfBirth });
             console.log("Validation success:", patientData);
-            
             router.push("/questionnaire");
-        } catch (error) {
-            alert("Something went wrong. Please try again.");
+          } catch (error: any) {
+            alert(error.message);
             console.error(error);
-        }
+          }
       };
 
     return (

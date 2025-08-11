@@ -128,3 +128,9 @@ UNDER 16
   curl -X POST http://localhost:5000/validation \
   -H "Content-Type: application/json" \
   -d '{"nhsNumber": "555666777", "surname": "MAY", "dateOfBirth": "2010-11-14"}'
+
+  -- 
+
+  THOUGHTS
+
+  STAGE 2: Storing the NHS No and Age for the calc - local storage, session cookies, redux...... 
