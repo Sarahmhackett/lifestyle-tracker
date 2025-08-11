@@ -1,18 +1,44 @@
+"use client";
 import styles from "./lifestyleform.module.css";
+import { submitLifestyleForm } from "../utils/submitLifestyleFormAPI";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface LifestyleFormProps {
     nhsNumber: string | null;
-  }
+}
 
 const LifestyleForm = ({ nhsNumber }: LifestyleFormProps) => {
+
+    const router = useRouter();
+
     const [drink, setDrink] = useState<boolean | null>(null);
     const [smoke, setSmoke] = useState<boolean | null>(null);
     const [exercise, setExercise] = useState<boolean | null>(null);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         console.log({ drink, smoke, exercise, nhsNumber });
+
+        if (drink === null || smoke === null || exercise === null) {
+            alert("Please answer all questions before submitting.");
+            return;
+        }
+
+        if (nhsNumber === null) {
+            alert("NHS number is missing. Please log in again.");
+            return;
+        }
+
+        try {
+            const result = await submitLifestyleForm(drink, smoke, exercise, nhsNumber);
+            console.log("Server response:", result);
+            router.push("/results");
+
+        } catch (err) {
+            console.error(err);
+            alert("Error submitting lifestyle data");
+        }
       };
 
 

@@ -76,8 +76,45 @@ def validate_patient():
 def session_info():
     nhs_number = session.get("nhs_number")
     if not nhs_number:
-        return jsonify({"error": "No NHS number in session"}), 404
+        return jsonify({"error": ERROR_DETAILS_NOT_FOUND}), 404
     return jsonify({"nhsNumber": nhs_number})
+
+
+@app.route("/lifestyle", methods=["POST"])
+def lifestyle():
+    data = request.json
+    nhs_number = data.get("nhsNumber")
+    drink = data.get("drink")
+    smoke = data.get("smoke")
+    exercise = data.get("exercise")
+
+    if not nhs_number:
+        return jsonify({"error": ERROR_DETAILS_NOT_FOUND}), 400
+
+    patient, status = get_patient_from_api(nhs_number)
+    if status != 200:
+        return jsonify({"error": ERROR_DETAILS_NOT_FOUND}), status
+
+    dob_str = patient.get("born")
+    if not dob_str:
+        return jsonify({"error": ERROR_DOB_MISSING}), 400
+
+    age = calculate_age(dob_str)
+
+    
+
+    # TBC - logic basd on age range
+    score = 0
+
+    return jsonify({
+        "nhsNumber": nhs_number,
+        "lifestyleScore": score,
+        "advice": "Consider healthier habits"
+    })
+
+
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
