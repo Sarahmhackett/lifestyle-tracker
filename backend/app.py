@@ -1,25 +1,73 @@
+import os
+from datetime import datetime
+
+from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+import requests
+
+from utils.age import calculate_age
+from constants import *
 
 app = Flask(__name__)
 CORS(app)
 
-@app.route("/", methods=["GET"])
-def home():
-    return "Flask is running!"
+load_dotenv()
+API_KEY = os.getenv("API_KEY")
+
+def get_patient_from_api(nhs_number):
+    url = f"https://al-tech-test-apim.azure-api.net/tech-test/t2/patients/{nhs_number}"
+    headers = {"Ocp-Apim-Subscription-Key": API_KEY}
+    res = requests.get(url, headers=headers)
+    
+    if res.status_code == 404:
+        return None, 404
+    if not res.ok:
+        return None, 500
+    return res.json(), 200
+
+def format_and_validate_dob(dob_str):
+    try:
+        dob_obj = datetime.strptime(dob_str, "%Y-%m-%d")
+        dob_formatted = dob_obj.strftime("%d-%m-%Y")
+        return dob_formatted, None
+    except ValueError:
+        return None, ERROR_INVALID_DOB
+
+def validate_patient_details(patient, surname, dob_formatted):
+    patient_surname = patient["name"].split(",")[0].strip().upper()
+    if patient_surname != surname or dob_formatted != patient["born"]:
+        return False
+    return True
 
 @app.route("/validation", methods=["POST"])
 def validate_patient():
     data = request.json
-    # TBC
-    return jsonify({"message": "placeholder"})
+    nhs_number = data.get("nhsNumber")
+    surname = data.get("surname", "").upper()
+    dob = data.get("dateOfBirth")
 
-@app.route("/score", methods=["POST"])
-def score_user():
-    data = request.json
-    # TBC
-    return jsonify({"message": "placeholder"})
+    if not nhs_number:
+        return jsonify({"error": ERROR_DETAILS_NOT_FOUND}), 400
 
+    patient, status = get_patient_from_api(nhs_number)
+    if status == 404:
+        return jsonify({"status": ERROR_DETAILS_NOT_FOUND}), 404
+    if status == 500:
+        return jsonify({"error": ERROR_API}), 500
+
+    dob_formatted, dob_error = format_and_validate_dob(dob)
+    if dob_error:
+        return jsonify({"error": dob_error}), 400
+
+    if not validate_patient_details(patient, surname, dob_formatted):
+        return jsonify({"error": ERROR_DETAILS_NOT_FOUND}), 400
+
+    age = calculate_age(dob_formatted)
+    if age < 16:
+        return jsonify({"error": ERROR_UNDERAGE}), 400
+
+    return jsonify(patient)
 
 if __name__ == "__main__":
     app.run(debug=True)

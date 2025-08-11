@@ -117,3 +117,14 @@ poetry run python app.py  # Run Flask development server
 poetry install           # Install dependencies
 poetry update           # Update dependencies
 ```
+
+
+CURL requests - MATCHES
+curl -X POST http://localhost:5000/validation \
+  -H "Content-Type: application/json" \
+  -d '{"nhsNumber": "111222333", "surname": "DOE", "dateOfBirth": "2007-01-14"}'
+
+UNDER 16
+  curl -X POST http://localhost:5000/validation \
+  -H "Content-Type: application/json" \
+  -d '{"nhsNumber": "555666777", "surname": "MAY", "dateOfBirth": "2010-11-14"}'

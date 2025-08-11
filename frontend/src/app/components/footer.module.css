@@ -1,0 +1,31 @@
+.footer {
+    background-color: #d8dde0;
+    border-top: 4px solid #005eb8;
+    display: flex;
+    height: 100vh;
+    padding: 16px;
+}
+
+.footerList {
+    color: #4c6272;
+    list-style: none;
+    padding: 0;
+}
+
+.footerListItem {
+    font-weight: 400;
+    font-size: 14px;
+    font-size: .875rem;
+    line-height: 1.71429;
+    text-decoration: underline;
+}
+
+  /* Tablet and above */
+  @media (min-width: 768px) { 
+    
+    .footerList {
+        display: flex;
+        list-style: none; 
+        gap: 1rem; 
+    }
+  }
