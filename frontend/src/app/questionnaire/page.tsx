@@ -24,7 +24,7 @@ export default function QuestionnairePage() {
   if (error) return <p>Error: {error}</p>;
 
   return <>
-    <LifestyleForm /> 
+    <LifestyleForm nhsNumber={nhsNumber} /> 
   </>
 
 }
