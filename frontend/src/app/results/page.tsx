@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import { fetchIsHealthyStatus } from "../utils/fetchHealthStatusAPI";
+import ResultsNoAction from "../components/ResultsNoAction";
+import ResultsActionRequired from "../components/ResultsActionRequired";
 
 export default function ResultsPage() {
   const [isHealthy, setIsHealthy] = useState<boolean | null>(null);
@@ -25,9 +27,9 @@ export default function ResultsPage() {
   return (
     <div>
       {isHealthy ? (
-        <h1>Great job, keep it up!</h1>
+        <ResultsNoAction />
       ) : (
-        <h1>Consider healthier habits</h1>
+        <ResultsActionRequired />
       )}
     </div>
   );

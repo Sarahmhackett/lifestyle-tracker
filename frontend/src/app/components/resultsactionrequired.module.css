@@ -1,0 +1,18 @@
+.resultsContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 10px;
+    margin: 42px 0 42px 300px; 
+    gap: 16px; 
+    max-width: fit-content;
+}
+
+.resultsTitle {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.resultsText {
+    font-size: 1.5rem;
+}

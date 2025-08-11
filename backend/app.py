@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 
 from dotenv import load_dotenv
-from flask import Flask, request, jsonify, session
+from flask import Flask, request, jsonify, session, redirect, url_for
 from flask_cors import CORS
 import requests
 
@@ -82,7 +82,6 @@ def session_info():
         return jsonify({"error": ERROR_DETAILS_NOT_FOUND}), 404
     return jsonify({"nhsNumber": nhs_number})
 
-
 @app.route("/lifestyle", methods=["POST"])
 def lifestyle():
     data = request.json
@@ -123,6 +122,11 @@ def results_info():
     if is_healthy is None:
         return jsonify({"error": "No results found"}), 404
     return jsonify({"isHealthy": is_healthy})
+
+@app.route("/logout", methods=["POST"])
+def logout():
+    session.clear()
+    return jsonify({"message": "Session cleared"})
 
 if __name__ == "__main__":
     app.run(debug=True)
