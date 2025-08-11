@@ -7,6 +7,9 @@ from flask_cors import CORS
 import requests
 
 from utils.age import calculate_age
+from utils.lifestyle_scoring import calculate_lifestyle_score
+from utils.age_banding import get_age_band
+from scoring_matrix import scores
 from constants import *
 
 app = Flask(__name__)
@@ -101,20 +104,25 @@ def lifestyle():
 
     age = calculate_age(dob_str)
 
-    
+    lifestyle_score = calculate_lifestyle_score(age, drink, smoke, exercise)
 
-    # TBC - logic basd on age range
-    score = 0
+    isHealthy = lifestyle_score < 3  # True = good, false = advice needed
+
+    session["isHealthy"] = lifestyle_score < 3
 
     return jsonify({
         "nhsNumber": nhs_number,
-        "lifestyleScore": score,
-        "advice": "Consider healthier habits"
+        "lifestyleScore": lifestyle_score,
+        "isHealthy": isHealthy,
+        "age": age
     })
 
-
-
-
+@app.route("/results-info", methods=["GET"])
+def results_info():
+    is_healthy = session.get("isHealthy")
+    if is_healthy is None:
+        return jsonify({"error": "No results found"}), 404
+    return jsonify({"isHealthy": is_healthy})
 
 if __name__ == "__main__":
     app.run(debug=True)
