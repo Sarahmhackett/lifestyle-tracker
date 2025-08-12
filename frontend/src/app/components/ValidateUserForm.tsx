@@ -45,8 +45,9 @@ const ValidateUserForm = () => {
         <div className={styles.formContainer}>
             <form onSubmit={handleSubmit} className={styles.form}>
 
-                <label className={styles.label}>NHS Number:</label>
+                <label className={styles.label} htmlFor="nhsNumber">NHS Number:</label>
                 <input
+                    id="nhsNumber"
                     type="number"
                     name="nhsNumber"
                     value={nhsNumber || ""}
@@ -55,8 +56,9 @@ const ValidateUserForm = () => {
                     className={styles.input}
                 />
                 
-                <label className={styles.label}>Surname: </label>
+                <label className={styles.label} htmlFor="surname">Surname: </label>
                 <input
+                    id="surname"
                     type="text"
                     name="surname"
                     value={surname || ""}
@@ -65,8 +67,9 @@ const ValidateUserForm = () => {
                     className={styles.input}
                 />
             
-                <label className={styles.label}>Date of Birth: </label>
+                <label className={styles.label} htmlFor="dateOfBirth">Date of Birth: </label>
                 <input
+                    id="dateOfBirth"
                     type="date"
                     value={dateOfBirth || ""}
                     onChange={(e) => setDateOfBirth(e.target.value)}
@@ -78,7 +81,7 @@ const ValidateUserForm = () => {
                         <ValidationErrorMessage message={errorMessage} />
                 )}
 
-                <button type="submit" className={styles.submitButton}>Continue</button>
+                <button type="submit" className={styles.submitButton} role="button" aria-label="Continue">Continue</button>
                 
             </form>
         </div>
