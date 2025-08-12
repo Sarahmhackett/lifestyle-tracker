@@ -23,7 +23,6 @@ load_dotenv()
 API_KEY = os.getenv("API_KEY")
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
 
- # Fetch the patient from the API using NHS no.
 def get_patient_from_api(nhs_number):
     url = f"{API_BASE_URL}/patients/{nhs_number}"
     headers = {"Ocp-Apim-Subscription-Key": API_KEY}
@@ -88,7 +87,6 @@ def lifestyle():
     if error:
         return jsonify({"error": error}), status
 
-    # store the health flag in the session
     session["isHealthy"] = result["isHealthy"]
     return jsonify(result)
 

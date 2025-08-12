@@ -1,4 +1,3 @@
-# backend/services/validation_service.py
 from datetime import datetime
 from constants import *
 from helpers.age import calculate_age
