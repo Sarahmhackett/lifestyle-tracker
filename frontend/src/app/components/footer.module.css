@@ -13,19 +13,17 @@
 }
 
 .footerListItem {
-    font-weight: 400;
-    font-size: 14px;
     font-size: .875rem;
+    font-weight: 400;
     line-height: 1.71429;
     text-decoration: underline;
 }
 
-  /* Tablet and above */
-  @media (min-width: 768px) { 
-    
+/* Tablet and above */
+@media (min-width: 768px) { 
     .footerList {
         display: flex;
-        list-style: none; 
         gap: 1rem; 
+        list-style: none; 
     }
-  }
+}

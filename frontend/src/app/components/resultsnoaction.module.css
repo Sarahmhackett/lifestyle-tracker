@@ -1,11 +1,11 @@
 .resultsContainer {
     display: flex;
     flex-direction: column;
+    gap: 16px; 
     justify-content: flex-start;
-    padding: 10px;
     margin: 42px 0 42px 300px; 
     max-width: fit-content;
-    gap: 16px; 
+    padding: 10px;
 }
 
 .resultsTitle {

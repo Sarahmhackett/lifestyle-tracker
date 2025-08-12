@@ -23,7 +23,11 @@ jest.mock('../utils/validatePatientAPI', () => ({
     }),
   }));
   
-  const validatePatientMock = validatePatient as jest.MockedFunction<typeof validatePatient>;
+const validatePatientMock = validatePatient as jest.MockedFunction<typeof validatePatient>;
+
+beforeEach(() => {
+    jest.clearAllMocks(); 
+  })
   
 test('renders form fields and submit button', () => {
     render(<ValidateUserForm />)
