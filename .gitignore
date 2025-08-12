@@ -1,22 +1,62 @@
-# Node/Next.js
+# Node / Next.js frontend
 /frontend/node_modules
 /frontend/.next
 /frontend/out
 /frontend/.env.local
+/frontend/.env*
+/frontend/npm-debug.log*
+/frontend/yarn-debug.log*
+/frontend/yarn-error.log*
+/frontend/package-lock.json
+/frontend/pnpm-lock.yaml
+/frontend/yarn.lock
 
-# Python
+# Python / Flask backend
 /backend/__pycache__/
-backend/*.pyc
+/backend/*.pyc
+/backend/*.pyo
+/backend/*.pyd
 /backend/.venv
 /backend/env
-/backend/poetry.lock
+/backend/venv
+/backend/.pytest_cache
+/backend/.mypy_cache
+/backend/.ruff_cache
+/backend/.coverage
+/backend/htmlcov/
+backend/*.egg-info
+backend/.env
+backend/poetry.lock
 
-# IDE files
+
+# Global Python ignores
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info
+.eggs/
+*.egg
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Coverage reports
+.coverage
+htmlcov/
+coverage.xml
+
+# IDE / Editor configs
 .vscode/
 .idea/
+*.swp
 
-# OS files
+# OS generated files
 .DS_Store
 Thumbs.db
 
+# Environment files
 .env
+.env.*
