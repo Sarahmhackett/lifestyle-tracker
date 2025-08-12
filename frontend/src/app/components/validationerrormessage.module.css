@@ -1,17 +1,38 @@
 .errorContainer {
     align-items: center;
     background: #fff;
-    border: 1px solid #ff0000;
-    border-radius: 4px;
+    border: 3px solid #ff0000;
     display: flex;
     justify-content: center;
     margin: 10px 0;
     padding: 10px;
-    width: 40%;
+    width: 100%;
 }
 
 .error {
     color: #ff0000;
-    font-size: 14px;
+    font-size: 16px;
     font-weight: bold;
+    line-height: 1.5;
+}
+
+/* Tablet */
+@media (min-width: 768px) and (max-width: 1024px) { 
+    .errorContainer {
+        width: 40%;
+    }
+}
+  
+/* Tablets landscape + Small Desktop */
+@media (min-width: 1025px) and (max-width: 1200px) { 
+    .errorContainer {
+        width: 40%;
+    }
+}
+  
+ /* Desktop */
+@media (min-width: 1201px) { 
+    .errorContainer {
+        width: 40%;
+    }
 }

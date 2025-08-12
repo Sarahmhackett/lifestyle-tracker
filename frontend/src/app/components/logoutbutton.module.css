@@ -9,7 +9,7 @@
   font-size: 1.2rem;
   font-weight: bold;
   margin-top: 10px;
-  max-width: 20%;
+  max-width: 100%;
   padding: 12px 24px;
   transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
@@ -17,4 +17,25 @@
 .logoutButton:hover {
   background-color: #006f3d;         
   box-shadow: 0 4px 0 #004e2c;       
+}
+
+/* Tablet */
+@media (min-width: 768px) and (max-width: 1024px) { 
+  .logoutButton {
+      width: 20%;
+  }
+}
+
+/* Tablets landscape + Small Desktop */
+@media (min-width: 1025px) and (max-width: 1200px) { 
+  .logoutButton {
+      width: 20%;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1201px) { 
+  .logoutButton {
+    width: 20%;
+  }
 }
