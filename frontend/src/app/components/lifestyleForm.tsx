@@ -19,7 +19,6 @@ const LifestyleForm = ({ nhsNumber }: LifestyleFormProps) => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log({ drink, smoke, exercise, nhsNumber });
 
         if (drink === null || smoke === null || exercise === null) {
             setError("Please answer all questions before submitting.");
@@ -31,11 +30,10 @@ const LifestyleForm = ({ nhsNumber }: LifestyleFormProps) => {
             return;
         }
 
-        setError(""); // Clear old errors
+        setError("");
 
         try {
             const result = await submitLifestyleForm(drink, smoke, exercise, nhsNumber);
-            console.log("Server response:", result);
             router.push("/results");
 
         } catch (err) {
@@ -43,7 +41,6 @@ const LifestyleForm = ({ nhsNumber }: LifestyleFormProps) => {
             alert("Error submitting lifestyle data");
         }
       };
-
 
     return (
         <div className={styles.formContainer}>
@@ -162,7 +159,7 @@ const LifestyleForm = ({ nhsNumber }: LifestyleFormProps) => {
           </p>
         )}
 
-            <button type="submit" className={styles.submitButton}>
+            <button type="submit" className={styles.submitButton} role="button" aria-label="Submit">
                 Submit
             </button>
 

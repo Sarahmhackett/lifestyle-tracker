@@ -5,7 +5,7 @@ const NavBar = () => {
     return (
         <nav className={styles.navigationBar} role="banner">
           <div className={styles.imageWrapper}>
-            <Image src="/nhs-logo.png" alt="" fill className={styles.image} priority sizes="100px" />
+            <Image src="/nhs-logo.png" alt="" fill className={styles.image} priority sizes="100px" role="img" aria-label="NHS Logo" />
           </div>
         </nav>
     )

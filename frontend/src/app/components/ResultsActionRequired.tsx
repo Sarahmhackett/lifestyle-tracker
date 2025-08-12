@@ -14,4 +14,3 @@ const ResultsActionRequired = () => {
 }
 
 export default ResultsActionRequired;
-

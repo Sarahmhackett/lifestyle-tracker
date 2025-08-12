@@ -21,7 +21,7 @@ export default function LogoutButton() {
   };
 
   return (
-    <button onClick={handleLogout} className={styles.logoutButton}>
+    <button onClick={handleLogout} className={styles.logoutButton} role="button" aria-label="Log out">
       Log out
     </button>
   );
