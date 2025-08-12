@@ -6,10 +6,14 @@ export async function validatePatient({ nhsNumber, surname, dateOfBirth }: { nhs
       credentials: "include", 
     });
   
+    const data = await res.json();
+    
     if (!res.ok) {
-      const errorData = await res.json();
-      throw new Error(errorData.error || "Validation failed");
+      return { 
+        success: false, 
+        message: data.error || data.status || "Validation failed" 
+      };
     }
-  
-    return res.json();
-  }
+    
+    return { success: true, data };
+}

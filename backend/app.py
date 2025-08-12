@@ -19,6 +19,7 @@ load_dotenv()
 API_KEY = os.getenv("API_KEY")
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
 
+ # Fetch the patient from the API using NHS no.
 def get_patient_from_api(nhs_number):
     url = f"https://al-tech-test-apim.azure-api.net/tech-test/t2/patients/{nhs_number}"
     headers = {"Ocp-Apim-Subscription-Key": API_KEY}
@@ -38,6 +39,7 @@ def format_and_validate_dob(dob_str):
     except ValueError:
         return None, ERROR_INVALID_DOB
 
+# Validate the incoming patient details match the record
 def validate_patient_details(patient, surname, dob_formatted):
     patient_surname = patient["name"].split(",")[0].strip().upper()
     if patient_surname != surname or dob_formatted != patient["born"]:
@@ -51,26 +53,33 @@ def validate_patient():
     surname = data.get("surname", "").upper()
     dob = data.get("dateOfBirth")
 
+    # Check if NHS number is missing from request
     if not nhs_number:
         return jsonify({"error": ERROR_DETAILS_NOT_FOUND}), 400
 
     patient, status = get_patient_from_api(nhs_number)
+
+    # Check if patient does not exist
     if status == 404:
-        return jsonify({"status": ERROR_DETAILS_NOT_FOUND}), 404
+        return jsonify({"error": ERROR_DETAILS_NOT_FOUND}), 404
     if status == 500:
         return jsonify({"error": ERROR_API}), 500
 
     dob_formatted, dob_error = format_and_validate_dob(dob)
+    # Check if date of birth is invalid
     if dob_error:
         return jsonify({"error": dob_error}), 400
 
+    # Check if patient details DO NOT match the record
     if not validate_patient_details(patient, surname, dob_formatted):
         return jsonify({"error": ERROR_DETAILS_NOT_FOUND}), 400
 
     age = calculate_age(dob_formatted)
+    # Check if patient is under 16
     if age < 16:
         return jsonify({"error": ERROR_UNDERAGE}), 400
 
+    # Store the NHS number in the session
     session["nhs_number"] = nhs_number
 
     return jsonify(patient)

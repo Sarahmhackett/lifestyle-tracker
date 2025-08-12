@@ -15,20 +15,23 @@ const LifestyleForm = ({ nhsNumber }: LifestyleFormProps) => {
     const [drink, setDrink] = useState<boolean | null>(null);
     const [smoke, setSmoke] = useState<boolean | null>(null);
     const [exercise, setExercise] = useState<boolean | null>(null);
+    const [error, setError] = useState<string>("");
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         console.log({ drink, smoke, exercise, nhsNumber });
 
         if (drink === null || smoke === null || exercise === null) {
-            alert("Please answer all questions before submitting.");
+            setError("Please answer all questions before submitting.");
             return;
         }
 
-        if (nhsNumber === null) {
-            alert("NHS number is missing. Please log in again.");
+        if (!nhsNumber) {
+            setError("Please log in again.");
             return;
         }
+
+        setError(""); // Clear old errors
 
         try {
             const result = await submitLifestyleForm(drink, smoke, exercise, nhsNumber);
@@ -60,6 +63,7 @@ const LifestyleForm = ({ nhsNumber }: LifestyleFormProps) => {
                 <div className={styles.radioItem}>
                     <input
                     type="radio"
+                    id="drink-yes"
                     name="drink"
                     value="true"
                     checked={drink === true}
@@ -67,20 +71,20 @@ const LifestyleForm = ({ nhsNumber }: LifestyleFormProps) => {
                     className={styles.radioInput}
                     required
                     />
-                    <label htmlFor="drink alcohol yes" className={styles.radioLabel}>Yes</label>
+                    <label htmlFor="drink-yes" className={styles.radioLabel}>Yes</label>
                 </div>
 
                 <div className={styles.radioItem}>
                     <input 
                         type="radio" 
+                        id="drink-no"
                         name="drink" 
                         value="false" 
                         checked={drink === false}
                         onChange={() => setDrink(false)}
                         className={styles.radioInput} 
-                        required
                     />
-                    <label htmlFor="drink alcohol no" className={styles.radioLabel}>No</label>
+                    <label htmlFor="drink-no" className={styles.radioLabel}>No</label>
                 </div>
             </fieldset>
 
@@ -92,6 +96,7 @@ const LifestyleForm = ({ nhsNumber }: LifestyleFormProps) => {
                 <div className={styles.radioItem}>
                     <input 
                         type="radio" 
+                        id="smoke-yes"
                         name="smoke" 
                         value="true" 
                         checked={smoke === true}
@@ -99,20 +104,20 @@ const LifestyleForm = ({ nhsNumber }: LifestyleFormProps) => {
                         className={styles.radioInput} 
                         required
                     />
-                    <label htmlFor="smoke yes" className={styles.radioLabel}>Yes</label>
+                    <label htmlFor="smoke-yes" className={styles.radioLabel}>Yes</label>
                 </div>
 
                 <div className={styles.radioItem}>
                     <input 
                         type="radio" 
+                        id="smoke-no"
                         name="smoke" 
                         value="false" 
                         checked={smoke === false}
                         onChange={() => setSmoke(false)}
                         className={styles.radioInput} 
-                        required
                     />
-                    <label htmlFor="smoke no" className={styles.radioLabel}>No</label>
+                    <label htmlFor="smoke-no" className={styles.radioLabel}>No</label>
                 </div>
             </fieldset>
 
@@ -125,27 +130,37 @@ const LifestyleForm = ({ nhsNumber }: LifestyleFormProps) => {
                 <div className={styles.radioItem}>
                     <input 
                         type="radio" 
+                        id="exercise-yes"
                         name="exercise" 
                         value="true" 
                         checked={exercise === true}
                         onChange={() => setExercise(true)}
                         className={styles.radioInput}
+                        required
                     />
-                    <label htmlFor="exercise yes" className={styles.radioLabel}>Yes</label>
+                    <label htmlFor="exercise-yes" className={styles.radioLabel}>Yes</label>
                 </div>
 
                 <div className={styles.radioItem}>
                     <input 
                         type="radio"
+                        id="exercise-no"
                         name="exercise"
                         value="false"
                         checked={exercise === false}
                         onChange={() => setExercise(false)}
                         className={styles.radioInput}
                     />
-                    <label htmlFor="exercise no" className={styles.radioLabel}>No</label>
+                    <label htmlFor="exercise-no" className={styles.radioLabel}>No</label>
                 </div>
             </fieldset>
+            
+            {/* Error message */}
+            {error && (
+                <p className={styles.errorMessage} role="alert" aria-live="polite">
+                    {error}
+          </p>
+        )}
 
             <button type="submit" className={styles.submitButton}>
                 Submit

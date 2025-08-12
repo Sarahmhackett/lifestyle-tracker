@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { validatePatient } from "../utils/validatePatientAPI";
+import ValidationErrorMessage from "./ValidationErrorMessage";
 import styles from "./validateuserform.module.css";
 
 const ValidateUserForm = () => {
@@ -11,33 +12,34 @@ const ValidateUserForm = () => {
     const [nhsNumber, setNhsNumber] = useState<number | null>(null);
     const [surname, setSurname] = useState<string>("");
     const [dateOfBirth, setDateOfBirth] = useState<string | null>(null);
+    const [errorMessage, setErrorMessage] = useState<string>("");
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         // Form Validation
         if (nhsNumber === null || nhsNumber.toString().length !== 9) {
-            alert("Please enter a valid NHS number.");
+            setErrorMessage("Please enter a valid 9 digit NHS number");
             return;
         }
-        if (surname === "") {
-            alert("Please enter a valid surname.");
+        if (!surname) {
+            setErrorMessage("Surname field is required");
             return;
         }
         if (!dateOfBirth) {
-            alert("Please enter a valid date of birth.");
+            setErrorMessage("Date of birth field is required");
             return;
         }
 
-        try {
-            const patientData = await validatePatient({ nhsNumber, surname, dateOfBirth });
-            console.log("Validation success:", patientData);
-            router.push("/questionnaire");
-          } catch (error: any) {
-            alert(error.message);
-            console.error(error);
-          }
-      };
+        const result = await validatePatient({ nhsNumber, surname, dateOfBirth });
+        
+        if (!result.success) {
+            setErrorMessage(result.message);
+            return;
+        }
+        
+        router.push("/questionnaire");
+    };
 
     return (
         <div className={styles.formContainer}>
@@ -71,6 +73,10 @@ const ValidateUserForm = () => {
                     required
                     className={styles.input}
                 />
+                
+                {errorMessage && (
+                        <ValidationErrorMessage message={errorMessage} />
+                )}
 
                 <button type="submit" className={styles.submitButton}>Continue</button>
                 
