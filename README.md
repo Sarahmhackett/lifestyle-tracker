@@ -1,78 +1,64 @@
 # NHS Lifestyle Tracker
 
-This monorepo contains both the frontend (Next.js) and backend (Flask) components of the NHS lifestyle tracker application.
+A web application for tracking and scoring patient lifestyle factors (drinking, smoking, exercise). The application validates patient details and provides personalised health recommendations.
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-
-- **Node.js** (v18 or higher) - for the frontend
-- **Python** (v3.12 or higher) - for the backend
-- **npm** or **yarn** - package manager for frontend
-- **Poetry** - dependency manager for backend (recommended)
+- Node.js (v18+)
+- Python (v3.12+)
+- Poetry (recommended) or pip
 
 ### Installation
 
-1. **Clone the repository**
+1. **Clone and setup frontend:**
    ```bash
    git clone <repository-url>
-   cd lifestyle_tracker
-   ```
-
-2. **Set up the Frontend**
-   ```bash
-   cd frontend
+   cd lifestyle_tracker/frontend
    npm install
    ```
 
-3. **Set up the Backend**
+2. **Setup backend:**
    ```bash
-   cd backend
-   # Install Poetry if you haven't already
-   curl -sSL https://install.python-poetry.org | python3 -
-   
-   # Install dependencies
-   poetry install
+   cd ../backend
+   poetry install  # or: pip install -r requirements.txt
+   ```
+
+3. **Environment variables:**
+   Create `.env` file in backend directory:
+   ```bash
+   API_KEY=your_api_key_here
+   FLASK_SECRET_KEY=your_secret_key_here
    ```
 
 ## 🏃‍♂️ Running the Application
 
-### Development Mode
+### Development
+```bash
+# Terminal 1 - Backend
+cd backend
+poetry run python app.py  # Runs on http://localhost:5000
 
-1. **Start the Backend Server**
-   ```bash
-   cd backend
-   poetry run python app.py
-   ```
-   The Flask server will start on `http://localhost:5000`
+# Terminal 2 - Frontend  
+cd frontend
+npm run dev  # Runs on http://localhost:3000
+```
 
-2. **Start the Frontend Development Server**
-   ```bash
-   cd frontend
-   npm run dev
-   ```
-   The Next.js application will start on `http://localhost:3000`
-
-3. **Access the Application**
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:5000
-
-### Production Build
-
-1. **Build the Frontend**
-   ```bash
-   cd frontend
-   npm run build
-   npm start
-   ```
-
-2. **Run the Backend**
-   ```bash
-   cd backend
-   poetry run python app.py
-   ```
+### Production
+```bash
+cd frontend && npm run build && npm start
+cd backend && poetry run python app.py
+```
 
 ## 📡 API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/validation` | POST | Validate patient NHS number and details |
+| `/session-info` | GET | Get current session patient info |
+| `/lifestyle` | POST | Submit lifestyle questionnaire |
+| `/results-info` | GET | Get lifestyle assessment results |
+| `/logout` | POST | Clear session data |
 
 ## 📦 Scripts
 
@@ -92,38 +78,48 @@ poetry update           # Update dependencies
 
 ### Pytest Tests
 ```bash
+cd backend
  $poetry run pytest
 
 ```
 
-### Useful CURL requests
+### React Testing Library
+```bash
+cd frontend
+npm run test
+```
 
-VALID PATIENT
+## 🔧 Development
+
+### Useful CURL Requests
+
+**VALID PATIENT**
 ```bash
 curl -X POST http://localhost:5000/validation \
   -H "Content-Type: application/json" \
   -d '{"nhsNumber": "111222333", "surname": "DOE", "dateOfBirth": "2007-01-14"}'
 ```
 
-UNDER 16
+**UNDER 16**
 ```bash
-  curl -X POST http://localhost:5000/validation \
+curl -X POST http://localhost:5000/validation \
   -H "Content-Type: application/json" \
   -d '{"nhsNumber": "555666777", "surname": "MAY", "dateOfBirth": "2010-11-14"}'
 ```
-OVER 66
+
+**OVER 66**
 ```bash
 curl -X POST http://localhost:5000/validation \
   -H "Content-Type: application/json" \
   -d '{
     "nhsNumber": "444555666",
-    "surname": "BOND",
+    "surname": "BOND", 
     "dateOfBirth": "1955-08-11"
   }'
 ```
 
-###  GENERAL THOUGHTS THROUGHOUT
+### General Thoughts Throughout
 
-- STAGE 2: Best way to store NHS No and/or Age in order to use the patient info on the scoring matrix. Settled on a session instead of local storage so that it persisted each refresh. In production, I would move to a token-based approach instead, because Flask sessions are usually cookie-based and can be manipulated unless secured properly.
+- **STAGE 2**: Considered the best way to store NHS Num and/or Age in order to create/use the same patient info against the scoring matrix and age banding. Settled on a Session instead of local storage, so that it persisted each refresh. 
 
-- UNIT TESTING: Unit tests may break in the future if patient age falls outside of a banding dynamically. Future fix to work around this. 
+- **UNIT TESTING**: Potential for unit tests may break in the future if patient's age falls outside of a banding. Kept it as a known risk for this task but it would be a future improvement.  
