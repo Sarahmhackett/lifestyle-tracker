@@ -48,7 +48,7 @@ const LifestyleForm = ({ nhsNumber }: LifestyleFormProps) => {
             <h1 className={styles.title}>Lifestyle Tracker</h1>
 
             <p className={styles.description}>
-                Answer the following questions to provide you with a personalised lifestyle report.
+                Answer the following questions to get your personalised lifestyle recommendation report.
             </p>
 
             {/* DRINK QUESTION */}
