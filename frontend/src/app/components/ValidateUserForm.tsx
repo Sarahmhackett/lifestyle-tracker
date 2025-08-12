@@ -31,8 +31,8 @@ const ValidateUserForm = () => {
             return;
         }
 
-        const result = await validatePatient({ nhsNumber, surname, dateOfBirth });
-        
+        const result = await validatePatient({ nhsNumber: nhsNumber.toString(), surname, dateOfBirth });
+
         if (!result.success) {
             setErrorMessage(result.message);
             return;

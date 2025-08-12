@@ -4,11 +4,15 @@ from datetime import datetime
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify, session, redirect, url_for
 from flask_cors import CORS
+from marshmallow import ValidationError
 import requests
 
-from utils.age import calculate_age
-from utils.lifestyle_scoring import calculate_lifestyle_score
-from utils.age_banding import get_age_band
+from services.validation_service import validate_patient_details
+from services.lifestyle_service import process_lifestyle_questionnaire
+from schemas import ValidationInputSchema, LifestyleInputSchema
+from helpers.age import calculate_age
+from helpers.lifestyle_scoring import calculate_lifestyle_score
+from helpers.age_banding import get_age_band
 from scoring_matrix import scores
 from constants import *
 
@@ -21,9 +25,9 @@ app.secret_key = os.getenv("FLASK_SECRET_KEY")
 
  # Fetch the patient from the API using NHS no.
 def get_patient_from_api(nhs_number):
-    url = f"https://al-tech-test-apim.azure-api.net/tech-test/t2/patients/{nhs_number}"
+    url = f"{API_BASE_URL}/patients/{nhs_number}"
     headers = {"Ocp-Apim-Subscription-Key": API_KEY}
-    res = requests.get(url, headers=headers)
+    res = requests.get(url, headers=headers, timeout=5)
     
     if res.status_code == 404:
         return None, 404
@@ -31,57 +35,28 @@ def get_patient_from_api(nhs_number):
         return None, 500
     return res.json(), 200
 
-def format_and_validate_dob(dob_str):
-    try:
-        dob_obj = datetime.strptime(dob_str, "%Y-%m-%d")
-        dob_formatted = dob_obj.strftime("%d-%m-%Y")
-        return dob_formatted, None
-    except ValueError:
-        return None, ERROR_INVALID_DOB
-
-# Validate the incoming patient details match the record
-def validate_patient_details(patient, surname, dob_formatted):
-    patient_surname = patient["name"].split(",")[0].strip().upper()
-    if patient_surname != surname or dob_formatted != patient["born"]:
-        return False
-    return True
-
 @app.route("/validation", methods=["POST"])
 def validate_patient():
-    data = request.json
-    nhs_number = data.get("nhsNumber")
-    surname = data.get("surname", "").upper()
-    dob = data.get("dateOfBirth")
+    data = request.get_json(silent=True)
+    if data is None:
+        data = request.form.to_dict()
 
-    # Check if NHS number is missing from request
-    if not nhs_number:
-        return jsonify({"error": ERROR_DETAILS_NOT_FOUND}), 400
+    try:
+        payload = ValidationInputSchema().load(data)
+    except ValidationError as err:
+        return jsonify({"error": ERROR_DETAILS_NOT_FOUND, "details": err.messages}), 400
 
-    patient, status = get_patient_from_api(nhs_number)
+    nhs_number = payload["nhsNumber"]
+    surname_upper = payload["surname"].upper()
+    dob_iso = payload["dateOfBirth"].strftime("%Y-%m-%d")
 
-    # Check if patient does not exist
-    if status == 404:
-        return jsonify({"error": ERROR_DETAILS_NOT_FOUND}), 404
-    if status == 500:
-        return jsonify({"error": ERROR_API}), 500
+    patient, error, status = validate_patient_details(
+        nhs_number, surname_upper, dob_iso, get_patient_from_api
+    )
+    if error:
+        return jsonify({"error": error}), status
 
-    dob_formatted, dob_error = format_and_validate_dob(dob)
-    # Check if date of birth is invalid
-    if dob_error:
-        return jsonify({"error": dob_error}), 400
-
-    # Check if patient details DO NOT match the record
-    if not validate_patient_details(patient, surname, dob_formatted):
-        return jsonify({"error": ERROR_DETAILS_NOT_FOUND}), 400
-
-    age = calculate_age(dob_formatted)
-    # Check if patient is under 16
-    if age < 16:
-        return jsonify({"error": ERROR_UNDERAGE}), 400
-
-    # Store the NHS number in the session
     session["nhs_number"] = nhs_number
-
     return jsonify(patient)
 
 @app.route("/session-info", methods=["GET"])
@@ -93,37 +68,29 @@ def session_info():
 
 @app.route("/lifestyle", methods=["POST"])
 def lifestyle():
-    data = request.json
-    nhs_number = data.get("nhsNumber")
-    drink = data.get("drink")
-    smoke = data.get("smoke")
-    exercise = data.get("exercise")
+    data = request.get_json(silent=True)
+    if data is None:
+        data = request.form.to_dict()
 
-    if not nhs_number:
-        return jsonify({"error": ERROR_DETAILS_NOT_FOUND}), 400
+    try:
+        payload = LifestyleInputSchema().load(data)
+    except ValidationError as err:
+        return jsonify({"error": ERROR_DETAILS_NOT_FOUND, "details": err.messages}), 400
 
-    patient, status = get_patient_from_api(nhs_number)
-    if status != 200:
-        return jsonify({"error": ERROR_DETAILS_NOT_FOUND}), status
+    nhs_number = payload["nhsNumber"]
+    drink = payload["drink"]
+    smoke = payload["smoke"]
+    exercise = payload["exercise"]
 
-    dob_str = patient.get("born")
-    if not dob_str:
-        return jsonify({"error": ERROR_DOB_MISSING}), 400
+    result, error, status = process_lifestyle_questionnaire(
+        nhs_number, drink, smoke, exercise, get_patient_from_api
+    )
+    if error:
+        return jsonify({"error": error}), status
 
-    age = calculate_age(dob_str)
-
-    lifestyle_score = calculate_lifestyle_score(age, drink, smoke, exercise)
-
-    isHealthy = lifestyle_score < 3  # True = good, false = advice needed
-
-    session["isHealthy"] = lifestyle_score < 3
-
-    return jsonify({
-        "nhsNumber": nhs_number,
-        "lifestyleScore": lifestyle_score,
-        "isHealthy": isHealthy,
-        "age": age
-    })
+    # store the health flag in the session
+    session["isHealthy"] = result["isHealthy"]
+    return jsonify(result)
 
 @app.route("/results-info", methods=["GET"])
 def results_info():

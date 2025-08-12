@@ -1,10 +1,14 @@
-export async function validatePatient({ nhsNumber, surname, dateOfBirth }: { nhsNumber: number, surname: string, dateOfBirth: string }) {
-    const res = await fetch("http://localhost:5000/validation", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nhsNumber, surname, dateOfBirth }),
-      credentials: "include", 
-    });
+export async function validatePatient({ nhsNumber, surname, dateOfBirth }: { nhsNumber: string, surname: string, dateOfBirth: string }) {
+  const res = await fetch("http://localhost:5000/validation", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      nhsNumber: nhsNumber.toString(),
+      surname,
+      dateOfBirth
+    }),
+    credentials: "include",
+  });
   
     const data = await res.json();
     

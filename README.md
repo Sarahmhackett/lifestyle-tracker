@@ -72,35 +72,7 @@ This monorepo contains both the frontend (Next.js) and backend (Flask) component
    poetry run python app.py
    ```
 
-## 🛠️ Technology Stack
-
-### Frontend
-- **Next.js 15.4.5** - React framework with App Router
-- **React 19.1.0** - UI library
-- **TypeScript** - Type-safe JavaScript
-- **CSS Modules** - Scoped styling
-
-### Backend
-- **Flask 3.1.1** - Python web framework
-- **Flask-CORS** - Cross-origin resource sharing
-- **Requests** - HTTP library for external API calls
-- **Poetry** - Dependency management
-
 ## 📡 API Endpoints
-
-The backend provides the following endpoints:
-
-- `GET /` - Health check endpoint
-- `POST /validation` - Patient validation (placeholder)
-- `POST /score` - User scoring (placeholder)
-
-## 🎯 Features
-
-- **Modern UI** - Built with Next.js and React 19
-- **Type Safety** - Full TypeScript support
-- **API Integration** - Flask backend with CORS support
-- **Development Ready** - Hot reloading and debugging tools
-
 
 ## 📦 Scripts
 
@@ -118,18 +90,29 @@ poetry install           # Install dependencies
 poetry update           # Update dependencies
 ```
 
+### Pytest Tests
+```bash
+ $poetry run pytest
 
-CURL requests - MATCHES
+```
+
+### Useful CURL requests
+
+VALID PATIENT
+```bash
 curl -X POST http://localhost:5000/validation \
   -H "Content-Type: application/json" \
   -d '{"nhsNumber": "111222333", "surname": "DOE", "dateOfBirth": "2007-01-14"}'
+```
 
 UNDER 16
+```bash
   curl -X POST http://localhost:5000/validation \
   -H "Content-Type: application/json" \
   -d '{"nhsNumber": "555666777", "surname": "MAY", "dateOfBirth": "2010-11-14"}'
-
-70 years
+```
+OVER 66
+```bash
 curl -X POST http://localhost:5000/validation \
   -H "Content-Type: application/json" \
   -d '{
@@ -137,7 +120,10 @@ curl -X POST http://localhost:5000/validation \
     "surname": "BOND",
     "dateOfBirth": "1955-08-11"
   }'
+```
 
-  THOUGHTS
+###  GENERAL THOUGHTS THROUGHOUT
 
-  STAGE 2: Storing the NHS No and Age for the calc - local storage, session cookies, redux...... 
+- STAGE 2: Best way to store NHS No and/or Age in order to use the patient info on the scoring matrix. Settled on a session instead of local storage so that it persisted each refresh. In production, I would move to a token-based approach instead, because Flask sessions are usually cookie-based and can be manipulated unless secured properly.
+
+- UNIT TESTING: Unit tests may break in the future if patient age falls outside of a banding dynamically. Future fix to work around this. 
