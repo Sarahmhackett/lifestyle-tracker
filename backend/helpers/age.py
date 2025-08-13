@@ -1,5 +1,6 @@
 from datetime import datetime
 
+# function to calculate patient's age from date of birth
 def calculate_age(born_str):
     born = datetime.strptime(born_str, "%d-%m-%Y")
     today = datetime.today()

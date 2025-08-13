@@ -37,7 +37,6 @@ const LifestyleForm = ({ nhsNumber }: LifestyleFormProps) => {
             router.push("/results");
 
         } catch (err) {
-            console.error(err);
             alert("Error submitting lifestyle data");
         }
       };

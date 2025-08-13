@@ -16,9 +16,9 @@ def test_lifestyle_happy_path_with_real_scoring(mock_api, client):
 
     payload = {
         "nhsNumber": "111222333",
-        "drink": False,       # means "yes" for q1 = 0pt
+        "drink": False,      # means "yes" for q1 = 0pt
         "smoke": False,      # means "yes" for q2 = 0pt
-        "exercise": False     # means "no" for q3 = 1pt
+        "exercise": False    # means "no" for q3 = 1pt
     }
 
     res = client.post("/lifestyle", json=payload)

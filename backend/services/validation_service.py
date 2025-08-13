@@ -2,6 +2,13 @@ from datetime import datetime
 from constants import *
 from helpers.age import calculate_age
 
+# Validation questionnaire service flow:
+# 1. fetches patient
+# 2. ensures DOB exists
+# 3. compares details to ensure they match
+# 4. checks if patient is under the MIN AGE
+# 5. returns the patient details if all checks pass
+
 def _format_and_validate_dob(dob_str: str):
     try:
         dob_obj = datetime.strptime(dob_str, DATE_IN)
@@ -12,12 +19,6 @@ def _format_and_validate_dob(dob_str: str):
 def _details_match(patient: dict, surname_upper: str, dob_formatted: str) -> bool:
     patient_surname = patient["name"].split(",")[0].strip().upper()
     return patient_surname == surname_upper and patient.get("born") == dob_formatted
-
-# Validation questionnaire service flow:
-# - fetch patient
-# - ensure DOB exists
-# - compare details
-# - returns patient, error and http status 
 
 def validate_patient_details(nhs_number: str, surname_upper: str, dob_iso: str, fetch_patient):
     patient, status = fetch_patient(nhs_number)

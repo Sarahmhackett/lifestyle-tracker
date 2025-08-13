@@ -3,10 +3,11 @@ from helpers.age import calculate_age
 from helpers.lifestyle_scoring import calculate_lifestyle_score
 
 # lifestyle questionnaire service flow:
-# - fetch patient
-# - ensure DOB exists
-# - calculates age for banding
-# - returns lifestyle score & returns health flag
+# 1. fetches patient
+# 2. ensures DOB exists
+# 3. calculates age for banding using age helper function
+# 4. returns lifestyle using lifestyle scoring helper function 
+# 5. returns the score, age and isHealthy (true/false) 
 
 def process_lifestyle_questionnaire(nhs_number: str, drink: bool, smoke: bool, exercise: bool, fetch_patient):
     patient, status = fetch_patient(nhs_number)

@@ -1,6 +1,7 @@
 from helpers.age_banding import get_age_band
 from scoring_matrix import scores
 
+# function to calculate lifestyle score based on age, drink, smoke, exercise
 def calculate_lifestyle_score(age, drink, smoke, exercise):
     band = get_age_band(age)
     if not band:
